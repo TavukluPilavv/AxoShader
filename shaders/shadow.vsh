@@ -1,9 +1,10 @@
-#version 150
+#version 330 compatibility
 
-in vec4 at_position;
-uniform mat4 shadowModelView;
-uniform mat4 shadowProjection;
+out vec2 texcoord;
+out vec4 glcolor;
 
 void main() {
-    gl_Position = shadowProjection * shadowModelView * at_position;
+    gl_Position = ftransform();
+    texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+    glcolor = gl_Color;
 }

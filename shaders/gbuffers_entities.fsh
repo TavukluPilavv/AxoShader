@@ -1,19 +1,23 @@
-#version 150
+#version 330 compatibility
 
-uniform sampler2D texture;
+uniform sampler2D gtexture;
 uniform sampler2D lightmap;
 
-in vec2 texCoord;
-in vec2 lightCoord;
-in vec4 vertexColor;
+in vec2 texcoord;
+in vec2 lmcoord;
+in vec4 glcolor;
 in vec3 viewNormal;
 
-out vec4 fragColor;
+/* RENDERTARGETS: 0,1,2 */
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 lightData;
+layout(location = 2) out vec4 normalData;
 
 void main() {
-    vec4 tex = texture2D(texture, texCoord) * vertexColor;
-    if (tex.a < 0.1) discard;
-    vec3 lm = texture2D(lightmap, lightCoord).rgb;
-    float face = 0.92 + 0.08 * max(normalize(viewNormal).y, 0.0);
-    fragColor = vec4(tex.rgb * lm * face, tex.a);
+    vec4 albedo = texture(gtexture, texcoord) * glcolor;
+    if (albedo.a < 0.10) discard;
+
+    color = albedo;
+    lightData = vec4(texture(lightmap, lmcoord).rgb, 1.0);
+    normalData = vec4(normalize(viewNormal) * 0.5 + 0.5, 1.0);
 }
